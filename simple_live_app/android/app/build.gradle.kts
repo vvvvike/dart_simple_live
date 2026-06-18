@@ -49,19 +49,11 @@ android {
                 keyAlias = keystoreProperties["keyAlias"] as String
             }
         }
-
-        // ✅ Debug 配置独立存在，不依赖任何外部文件
-        create("debug") {
-            storeFile = file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
     }
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("debug")
+           
         }
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
