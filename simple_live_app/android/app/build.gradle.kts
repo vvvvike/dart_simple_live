@@ -41,9 +41,6 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("key.properties")
-            val keystoreProperties = java.util.Properties()
-            keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
 
             storeFile = file(keystoreProperties["storeFile"] ?: "")
             storePassword = keystoreProperties["storePassword"] as String?
