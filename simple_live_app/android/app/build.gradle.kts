@@ -41,26 +41,31 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String
-            isV1SigningEnabled = true
-            isV2SigningEnabled = true
+            val keystorePropertiesFile = rootProject.file("key.properties")
+            val keystoreProperties = java.util.Properties()
+            keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+
+            storeFile = file(keystoreProperties["storeFile"] ?: "")
+            storePassword = keystoreProperties["storePassword"] as String?
+            keyPassword = keystoreProperties["keyPassword"] as String?
+            keyAlias = keystoreProperties["keyAlias"] as String?
+        }
+        create("debug") {
+            storeFile = file("debug.keystore") // 或直接留空，Gradle 会用默认路径
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
     }
 
     buildTypes {
-        release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        getByName("release") {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                // Default file with automatically generated optimization rules.
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }
