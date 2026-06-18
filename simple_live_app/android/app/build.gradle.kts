@@ -40,15 +40,19 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-
-            storeFile = file(keystoreProperties["storeFile"] ?: "")
-            storePassword = keystoreProperties["storePassword"] as String?
-            keyPassword = keystoreProperties["keyPassword"] as String?
-            keyAlias = keystoreProperties["keyAlias"] as String?
+        // ✅ 只在有 key.properties 时才创建 release 配置
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+            }
         }
+
+        // ✅ Debug 配置独立存在，不依赖任何外部文件
         create("debug") {
-            storeFile = file("debug.keystore") // 或直接留空，Gradle 会用默认路径
+            storeFile = file("debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
